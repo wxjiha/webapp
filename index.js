@@ -3,7 +3,7 @@ var express = require ('express')
 var ejs = require('ejs')
 
 //Import mysql module
-var mysql = require('mysql')
+var mysql = require('mysql2')
 
 
 // Create the express application object

@@ -8,7 +8,7 @@
     <h1><%=shopData.shopName%> Shop</h1>
     <h2>Here are the items that we sell:</h2>
     <ul>
-      <% availableitems.forEach(function(items) { %>
+      <% availableitems.forEach(function(item) { %>
         <li><%= item.name %>, £<%=item.price%> </li>
       <% }) %>
     </ul>

@@ -52,7 +52,8 @@ app.use('/products', usersRoutes)
 
 // Load the route handlers for /login
 const loginRouter = require('./routes/login'); 
-app.use('/login', usersRouter);
+app.use('/login', usersRoutes);
+
 
 // Start the web app listening
 app.listen(port, () => console.log(`Node app listening on port ${port}!`))

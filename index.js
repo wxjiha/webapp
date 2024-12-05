@@ -2,8 +2,11 @@
 var express = require ('express')
 var ejs = require('ejs')
 
-//Import mysql module
+//Import modules
 var mysql = require('mysql2')
+var session = require ('express-session')
+var validator = require ('express-validator');
+const expressSanitizer = require('express-sanitizer');
 
 
 // Create the express application object
@@ -18,6 +21,17 @@ app.use(express.urlencoded({ extended: true }))
 
 // Set up public folder (for css and statis js)
 app.use(express.static(__dirname + '/public'))
+
+// Create a session
+app.use(session({
+    secret: 'somerandomstuff',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        expires: 600000
+    }
+}))
+
 
 // Define the database connection
 const db = mysql.createConnection ({
@@ -50,10 +64,20 @@ app.use('/users', usersRoutes)
 const productsRoutes = require('./routes/products')
 app.use('/products', usersRoutes)
 
-// Load the route handlers for /login
-const loginRouter = require('./routes/login'); 
-app.use('/login', usersRoutes);
+// // Load the route handlers for /login
+// const loginRouter = require('./users/login'); 
+// app.use('/login', usersRoutes);
 
+// Middleware to ensure the user is logged in
+function redirectLogin(req, res, next) {
+    if (!req.session.userId) {
+        res.redirect('/login');
+    } else {
+        next();
+    }
+}
+
+app.use(expressSanitizer());
 
 // Start the web app listening
 app.listen(port, () => console.log(`Node app listening on port ${port}!`))

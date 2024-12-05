@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+ <head>
+   <title><%= shopData.shopName %></title>
+   <link rel="stylesheet" type="text/css" href="/main.css" />
+ </head>
+ <body>
+   <h1>User List for <%= shopData.shopName %></h1>
+   <h2>Registered Users:</h2>
+   <table border="1">
+     <tr>
+       <th>Username</th>
+       <th>Email</th>
+     </tr>
+     <% userslist.forEach(function(users) { %>
+       <tr>
+         <td><%= users.username %></td>
+         <td><%= users.email %></td>
+       </tr>
+     <% }) %>
+   </table>
+ </body>
+</html>

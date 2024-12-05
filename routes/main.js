@@ -39,41 +39,21 @@ router.get('/list', function(req, res, next) {
      })
 })
 
-// Route to handle login form submission
-router.post('/users/login', function (req, res, next) {
-    const { username, password } = req.body;
 
-    db.query(
-        'SELECT hashed_password FROM users WHERE username = ?',
-        [username],
-        (err, results) => {
-            if (err) {
-                console.error('Error querying database:', err);
-                return res.status(500).send('An error occurred.');
-            }
 
-            if (results.length === 0) {
-                return res.status(401).send('Invalid username or password.');
-            }
+// router.get('/users/userslist',function(req, res, next){
+//     res.render("userslist.ejs")
+// })
 
-            const hashedPassword = results[0].hashed_password;
+// router.get('/logout', redirectLogin, (req,res) => {
+//     req.session.destroy(err => {
+//     if (err) {
+//       return res.redirect('./')
+//     }
+//     res.send('you are now logged out. <a href='+'./'+'>Home</a>');
+//     })
+// })
 
-            // Compare hashed password
-            bcrypt.compare(password, hashedPassword, (err, match) => {
-                if (err) {
-                    console.error('Error comparing passwords:', err);
-                    return res.status(500).send('An error occurred.');
-                }
-
-                if (match) {
-                    res.send('Login successful! Welcome, ' + username + '!');
-                } else {
-                    res.status(401).send('Invalid username or password.');
-                }
-            });
-        }
-    );
-});
 
 // Export the router object so index.js can access it
 module.exports = router

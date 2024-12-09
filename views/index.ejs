@@ -3,14 +3,29 @@
   <head>
     <title>Welcome to <%=shopData.shopName%></title>
     <link rel="stylesheet"  type="text/css" href="/main.css" />
+    <nav class="navbar">
+      <ul class="menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/search">Search</a></li>
+        <li><a href="/users/login">Login</a></li>
+        <li><a href="/users/register">Register</a></li>
+      </ul>
+    </nav>
   </head>
   <body>
     <h1>Welcome to <%=shopData.shopName%></h1>
-    <p><a href="about">About <%=shopData.shopName%></a></p>
+
+    <img src="img/curling.jpg" alt="Curling Macara" class="pictures">
+    <img src="img/lengthaning.jpg" alt="Lengthaning Macara" class="pictures">
+    <img src="img/volumising.jpg" alt="Volumising Macara" class="pictures">
+
+    <!-- <p><a href="about">About <%=shopData.shopName%></a></p>
     <p><a href="list">Product List</a></p>
     <p><a href="search">Search for Products</a></p>
-    <p><a href="users/register">Register with us</a></p>
+    <p><a href="users/register">Register</a></p>
     <p><a href="users/login">Login</a></p>
-    <!-- <p><a href="users/userslist">Users List</a></p> -->
+    <p><a href="users/userslist">Users List</a></p> -->
+
   </body>
 </html>

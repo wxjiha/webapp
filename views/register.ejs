@@ -3,13 +3,29 @@
   <head>
     <title>Register for <%=shopData.shopName%></title>
     <link rel="stylesheet"  type="text/css" href="/main.css" />
+    <nav class="navbar">
+      <ul class="menu">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/search">Search</a></li>
+        <li><a href="/users/login">Login</a></li>
+        <li><a href="/users/register">Register</a></li>
+      </ul>
+    </nav>
   </head>
   <body>
     <h1>Register for <%=shopData.shopName%></h1>
     <form method="POST" action="registered" >
+      <label for="username">Username:</label>
       <input type="text" name="user" placeholder="Username" required>
+
+      <label for="email">Email:</label>
       <input type="email" name="email" placeholder="Email" required>
+
+      <label for="password">Password:</label>
       <input type="password" name="password" placeholder="Password" required>
+
+      <label for="password">Confirm Password:</label>
       <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
       <button type="submit">Register</button>
     </form>  

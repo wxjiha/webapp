@@ -7,6 +7,14 @@ router.get('/',function(req, res, next){
     res.render('index.ejs')
 })
 
+router.get('/home', (req, res) => {
+    if (!req.session.userId) {
+        return res.redirect('/loggedin'); // Redirect to login if not logged in
+    }
+    res.render('home.ejs', { username: req.session.userId });
+});
+
+
 router.get('/about',function(req, res, next){
     res.render('about.ejs')
 })

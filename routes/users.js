@@ -25,8 +25,12 @@ router.post('/loggedin',
     [check('username').notEmpty().withMessage('Username is required')],
     [check('password').notEmpty().withMessage('Password is required')],
     function (req, res, next) {
-    req.sanitize(req.body.username)
-    req.sanitize(req.body.plainPassword)
+    // req.sanitize(req.body.username)
+    // req.sanitize(req.body.plainPassword)
+    const errors = validationResult(req);
+    if (!errors.isEmpty()){
+        return res.status(400).json({errors:errors.array()});
+    }
     const { username, password } = req.body;
 
     // Query the database to find the user by username
@@ -40,7 +44,7 @@ router.post('/loggedin',
 
             if (results.length === 0) {
                 // No user found with the given username
-                return res.send('Login failed: Invalid username or password.');
+                return res.status(400).send('Login failed: Invalid username or password.');
             }
 
             // Compare the entered password with the hashed password from the database
@@ -53,14 +57,14 @@ router.post('/loggedin',
 
                 if (result == true) {
                     // Passwords match, login is successful
-                    res.send('Login successful! Welcome, ' + username + '!');
+                    // res.send('Login successful! Welcome, ' + username + '!');
                     // Save user session here, when login is successful
                     req.session.userId = req.body.username;
-                    return res.redirect('main/index')
+                    return res.redirect('/home')
 
                 } else {
                     // Passwords do not match
-                    res.send('Login failed: Invalid username or password.');
+                    res.status(400).send('Login failed: Invalid username or password.');
                 }
             });
         }
@@ -73,48 +77,44 @@ router.get('/register', function (req, res, next) {
 })    
 
 router.post('/registered', 
-    [check('username').notEmpty().withMessage('Username is required').isLength({ min: 3, max: 20 }).withMessage('Username must be between 3 and 20 characters')],
-    [check('email').isEmail()], 
+    [check('username').notEmpty().withMessage('Username is required').isLength({ min: 3, max: 20 }).withMessage('Username must be between 3 and 20 characters').trim().escape()],
+    [check('email').isEmail().withMessage('Invalid email address').normalizeEmail()], 
     [check('password').isLength({min:8}).withMessage('Password must be at least 8 characters long')], 
     [check('confirmPassword').custom((value, { req }) => value === req.body.password).withMessage('Passwords do not match')],
     function (req, res, next) {
-    req.sanitize(req.body.username)
-    req.sanitize(req.body.email)
-    req.sanitize(req.body.plainPassword)
+    // req.sanitize(req.body.username)
+    // req.sanitize(req.body.email)
+    // req.sanitize(req.body.plainPassword)
     const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            res.redirect('./register'); }
-        else { 
-            // Extracting user data
-            const plainPassword = req.body.password;
-            const username = req.body.user; 
-            const email = req.body.email;
+            return res.status(400).json({ errors: errors.array() });
+        }
+            // res.redirect('./register');
+        // }else { 
+        //     // Extracting user data
+        //     const plainPassword = req.body.password;
+        //     const username = req.body.user; 
+        //     const email = req.body.email;
+
 
             // Hashing the password
-            bcrypt.hash(plainPassword, saltRounds, function (err, hashed_password) {
+        bcrypt.hash(plainPassword, saltRounds, function (err, hashed_password) {
+            if (err) {
+                next(err);
+            }
+            let sqlquery = "INSERT INTO users (username, email, hashed_password) VALUES (?,?,?)";
+
+            let newUser = [username,email,hashed_password];
+            db.query(sqlquery, newUser, (err,result) => {
                 if (err) {
                     next(err);
+                } else {
+                res.send(' Hello you are now registered with the username: ' + username +  'We will send an email to you at ' + req.body.email);
                 }
-                let sqlquery = "INSERT INTO users (username, email, hashed_password) VALUES (?,?,?)";
-
-        
-        // console.log('User Data:', {
-        //     username: username,
-        //     email: email,
-        //     hashedPassword: hashedPassword
-        // });
-
-                let newUser = [username,email,hashed_password];
-                db.query(sqlquery, newUser, (err,result) => {
-                    if (err) {
-                        next(err);
-                    } else {
-                    res.send(' Hello you are now registered with the username: ' + username +  'We will send an email to you at ' + req.body.email);
-                    }
-                });
             });
-        }
-});
+        });
+    }
+);
 
 //// // Route to display the list of users 
 //// router.get('/users/userlist', function (req, res, next) {

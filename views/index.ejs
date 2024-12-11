@@ -12,23 +12,30 @@
         <li><a href="/users/login">Login</a></li>
         <li><a href="/users/register">Register</a></li>
         <li><a href="/basket">Checkout</a></li>
+        <li><a href="/users/logout">Logout</a></li>
       </ul>
     </nav>
   </head>
   <body>
     <h1>Welcome to <%=shopData.shopName%></h1>
 
+    <h2><% if (message) { %>
+      <p><%= message %></p>
+      <% } %>
+    </h2>
+
+
     <img src="img/curling.jpg" alt="Curling Mascara" class="pictures">
     <img src="img/lengthening.jpg" alt="Lengthening Mascara" class="pictures">
     <img src="img/volumising.jpg" alt="Volumising Mascara" class="pictures">
 
-    <header>
+    <!-- <header>
       <div id="category-container"></div>
     </header>
     <main>
       <div id="product-container"></div>
       <div id="product-details"></div>
-    </main>
+    </main> -->
     <!-- <script src="js/api.js"></script>
     <script src="js/app.js"></script> -->
     <!-- <p><a href="about">About <%=shopData.shopName%></a></p>

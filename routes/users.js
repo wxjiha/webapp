@@ -65,8 +65,10 @@ router.post('/loggedin',
                     // Passwords match, login is successful
                     // res.send('Login successful! Welcome, ' + username + '!');
                     // Save user session here, when login is successful
-                    req.session.userId = req.body.username;
-                    return res.redirect('/home')
+                    req.session.userId = username;
+                    req.session.isLoggedIn = true;
+                    req.session.message = 'Welcome Back!';
+                    return res.redirect('/')
 
                 } else {
                     // Passwords do not match
@@ -83,7 +85,7 @@ router.get('/logout', redirectLogin,(req, res) => {
         console.error(err);
         return res.redirect('/');
       }
-      res.render('logout', {message:"You've successfully logged  out"}); 
+      res.render('logout', {message:"You've successfully logged out, you are being redirected to the home page"}); 
     });
 });
 

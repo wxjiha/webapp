@@ -10,18 +10,49 @@ app.use(express.json());
 // Handle our routes
 router.get('/',function(req, res, next){
     res.render('index.ejs')
+    // if (req.session.isLoggedIn) {
+    //     res.render('index', { message: 'Welcome!' });
+    // } else {
+    //     res.render('index', { message: null });
+    // }
+
+    // const message = req.session.isLoggedIn ? 'Welcome Back!' : null; // Check login status
+    // res.render('index', { message });
+    // if (!req.session.userId) {
+    //     req.session.message = null; // Clear the message for logged-out users
+    // }
+    // const message = req.session.message || null;
+    // const shopData = { shopName: 'Your Shop' };
+
+    // res.render('index', { message, shopData });
+
+    // Check if the user is logged in and set the message accordingly
+    const message = req.session.userId ? 'Welcome Back!' : null;
+
+    // Clear the message for logged-out users
+    if (!req.session.userId) {
+        req.session.message = null;
+    }
+
+    // Define shop data
+    const shopData = { shopName: 'Spendaholic' };
+
+    // Render the index page with the message and shop data
+    res.render('index', { message, shopData });
+
+
 })
 
 router.get('/checkout',function(req, res, next){
     res.render('checkout.ejs')
 })
 
-router.get('/home', (req, res) => {
-    if (!req.session.userId) {
-        return res.redirect('/loggedin'); // Redirect to login if not logged in
-    }
-    res.render('home.ejs', { username: req.session.userId });
-});
+// router.get('/home', (req, res) => {
+//     if (!req.session.userId) {
+//         return res.redirect('/loggedin'); // Redirect to login if not logged in
+//     }
+//     res.render('home.ejs', { username: req.session.userId });
+// });
 
 
 router.get('/about',function(req, res, next){

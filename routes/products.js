@@ -46,3 +46,24 @@ router.post('/productadded', function (req, res, next) {
             res.send(' This product has been added to database, name: '+ req.body.name + ' price '+ req.body.price)
     })
 }) 
+
+
+// Example: Fetch all products
+router.get('/', (req, res) => {
+    // Replace this with database logic
+    const items = [
+        { id: 1, name: 'Product 1', price: 1000 },
+        { id: 2, name: 'Product 2', price: 2000 },
+    ];
+    res.json(items);
+});
+
+// Example: Fetch a single product by ID
+router.get('/:id', (req, res) => {
+    const productId = req.params.id;
+    // Replace this with database logic
+    const items = { id: itemId, name: 'Product 1', price: 1000 };
+    res.json(items);
+});
+
+module.exports = router;

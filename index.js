@@ -8,10 +8,10 @@ var session = require ('express-session')
 var validator = require ('express-validator');
 const expressSanitizer = require('express-sanitizer');
 
-
 // Create the express application object
 const app = express()
 const port = 8000
+
 
 // Tell Express that we want to use EJS as the templating engine
 app.set('view engine', 'ejs')
@@ -64,6 +64,7 @@ app.use('/users', usersRoutes)
 const productsRoutes = require('./routes/products')
 app.use('/products', usersRoutes)
 
+
 // // Load the route handlers for /login
 // const loginRouter = require('./users/login'); 
 // app.use('/login', usersRoutes);
@@ -77,7 +78,14 @@ function redirectLogin(req, res, next) {
     }
 }
 
-app.use(expressSanitizer());
 
+function isAuthenticated(req, res, next) {
+    if (req.session.user) {
+      return next();
+    }
+    res.redirect('/login');
+}
+
+app.use(expressSanitizer());
 // Start the web app listening
 app.listen(port, () => console.log(`Node app listening on port ${port}!`))

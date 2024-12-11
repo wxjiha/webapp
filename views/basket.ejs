@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <script src="https://js.stripe.com/v3/"></script> <!-- Load Stripe.js -->
+</head>
+<body>
+    <h1>Checkout Page</h1>
+    <form id="payment-form">
+        <label for="card-element">Credit or Debit Card</label>
+        <div id="card-element"></div> <!-- Stripe embeds the card input here -->
+        <button id="submit">Pay</button>
+        <p id="payment-message"></p>
+    </form>
+
+    <!-- Include your frontend logic -->
+    <script>
+      const stripe = Stripe('pk_test_51QURwHCr8lIdfj62jyCUPtor1lGcSvgk2tdZhJWIQTiGJXZtLlvmreRxDYzu1jG4ZMqK9YdWkxk1XNLgyT8kikK000nYQkqgps'); // Replace with your actual publishable key
+      const elements = stripe.elements();
+
+      // Create a card element and mount it
+      const card = elements.create('card');
+      card.mount('#card-element');
+
+      document.querySelector('#payment-form').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const { clientSecret } = await fetch('/create-payment-intent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount: 5000, currency: 'gbp' }) // Adjust amount and currency
+        }).then(async (res) => {
+          if (!res.ok) {
+            console.error('Failed to fetch clientSecret:', await res.text());
+            throw new Error('Failed to create payment intent');
+          }
+        return res.json();
+
+        const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+          card: card,
+          billing_details: { name: 'Customer Name' },
+          }
+        });
+
+        if (error) {
+          // Handle error (e.g., display message to user)
+          console.error(error.message);
+          alert('Payment failed: ' + error.message);
+        } else if (paymentIntent.status === 'succeeded') {
+          // Payment succeeded, redirect to confirmation page
+          console.log('Payment successful! Redirecting...');
+          window.location.href = `http://localhost:8000/confirmation?paymentIntentId=${paymentIntent.id}`;
+        }
+        });
+      });
+
+    </script>
+</body>
+</html>

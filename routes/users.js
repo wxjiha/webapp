@@ -50,6 +50,12 @@ router.post('/loggedin',
             // Compare the entered password with the hashed password from the database
             const hashed_password = results[0].hashed_password;
 
+
+            req.session.user = {
+                id: results[0].id,
+                username: results[0].username,
+            };
+
             bcrypt.compare(password, hashed_password, function(err, result) {
                 if (err) {
                     next(err)
@@ -69,6 +75,16 @@ router.post('/loggedin',
             });
         }
     );
+});
+
+router.get('/logout', redirectLogin,(req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error(err);
+        return res.redirect('/');
+      }
+      res.render('logout', {message:"You've successfully logged  out"}); 
+    });
 });
 
 
@@ -145,5 +161,18 @@ router.post('/registered',
 //    // });
 //// });
 
+
+router.get('/:id', (req, res) => {
+    const userId = req.params.id;
+    // Replace this with database logic
+    const user = { id: userId, username: 'User1' };
+    res.json(user);
+});
+
+router.get('/basket', (req, res) => {
+    res.render('basket'); 
+});
+
 // Export the router object so index.js can access it
 module.exports = router;
+module.exports.redirectLogin = redirectLogin;

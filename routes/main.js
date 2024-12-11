@@ -1,10 +1,19 @@
 // Create a new router
 const express = require("express")
 const router = express.Router()
+const cors = require('cors')
+const app = express();
+
+app.use(cors());
+app.use(express.json());
 
 // Handle our routes
 router.get('/',function(req, res, next){
     res.render('index.ejs')
+})
+
+router.get('/checkout',function(req, res, next){
+    res.render('checkout.ejs')
 })
 
 router.get('/home', (req, res) => {
@@ -47,20 +56,6 @@ router.get('/list', function(req, res, next) {
      })
 })
 
-
-
-// router.get('/users/userslist',function(req, res, next){
-//     res.render("userslist.ejs")
-// })
-
-// router.get('/logout', redirectLogin, (req,res) => {
-//     req.session.destroy(err => {
-//     if (err) {
-//       return res.redirect('./')
-//     }
-//     res.send('you are now logged out. <a href='+'./'+'>Home</a>');
-//     })
-// })
 
 
 // Export the router object so index.js can access it

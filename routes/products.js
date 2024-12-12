@@ -92,14 +92,7 @@ router.post('/add-to-basket', (req, res) => {
     }    
 
     // Check if product already in basket, and update quantity
-    // const itemIndex = req.session.basket.findIndex(item => item.productId == productId);
     const existingProductIndex = req.session.basket.findIndex(item => item.productId === productId);
-
-    // if (itemIndex !== -1) {
-    //     req.session.basket[itemIndex].quantity += parseInt(quantity);
-    // } else {
-    //     req.session.basket.push({ productId, quantity: parseInt(quantity) });
-    // }
 
     if (existingProductIndex !== -1) {
         // If the product is already in the basket, update the quantity
@@ -110,7 +103,7 @@ router.post('/add-to-basket', (req, res) => {
     }
 
     res.status(200).json({ message: 'Product added to basket successfully!' });
-    res.redirect('/basket');
+
 });
 
 

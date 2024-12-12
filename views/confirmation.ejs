@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Confirmation</title>
+    <link rel="stylesheet" type="text/css" href="/main.css">
 </head>
 <body>
     <h1>Payment Successful!</h1>
@@ -11,5 +12,6 @@
     <p>Payment ID: <%= paymentIntent.id %></p>
     <p>Amount Paid: $<%= (paymentIntent.amount / 100).toFixed(2) %></p>
     <p>Status: <%= paymentIntent.status %></p>
+    <a href="/">Return to Home</a>
 </body>
 </html>

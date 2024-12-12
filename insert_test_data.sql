@@ -3,7 +3,7 @@
 USE webapp;
 
 INSERT INTO items (name, price)
-VALUES('Lengthaning Mascara', 18.25),('Volumising Mascara', 20.00), ('Curling Mascara', 15.99) ;
+VALUES('Lengthaning Mascara', 00.18),('Volumising Mascara', 00.20), ('Curling Mascara', 00.16) ;
 
 INSERT INTO users (username, hashed_password, email) 
 VALUES  ('johndoe13', '$2b$10$EXAMPLEHASHEDPASSWORD', 'johndoe@test.com'),

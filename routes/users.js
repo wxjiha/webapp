@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const { check, validationResult } = require('express-validator');
 
+const db = require('../db');
 
 const redirectLogin = (req, res, next) => {
     if (!req.session.userId ) {
@@ -21,63 +22,103 @@ router.get('/login', function (req, res, next) {
 });
 
 // Route to handle login validation
-router.post('/loggedin',
-    [check('username').notEmpty().withMessage('Username is required')],
-    [check('password').notEmpty().withMessage('Password is required')],
-    function (req, res, next) {
-    // req.sanitize(req.body.username)
-    // req.sanitize(req.body.plainPassword)
+// router.post('/loggedin',
+//     [check('username').notEmpty().withMessage('Username is required')],
+//     [check('password').notEmpty().withMessage('Password is required')],
+//     async function (req, res, next) {
+//     // req.sanitize(req.body.username)
+//     // req.sanitize(req.body.plainPassword)
+//     const errors = validationResult(req);
+//     if (!errors.isEmpty()){
+//         return res.status(400).json({errors:errors.array()});
+//     }
+//     const { username, password } = req.body;
+
+//     // Query the database to find the user by username
+//     db.query(
+//         'SELECT hashed_password FROM users WHERE username = ?',
+//         [username],
+//         (err, results) => {
+//             if (err) {
+//                 next(err)
+//             }
+
+//             if (results.length === 0) {
+//                 // No user found with the given username
+//                 return res.status(400).send('Login failed: Invalid username or password.');
+//             }
+
+//             // Compare the entered password with the hashed password from the database
+//             const hashed_password = results[0].hashed_password;
+
+
+//             req.session.user = {
+//                 id: results[0].id,
+//                 username: results[0].username,
+//             };
+
+//             bcrypt.compare(password, hashed_password, function(err, result) {
+//                 if (err) {
+//                     next(err)
+//                 }
+
+//                 if (result == true) {
+//                     // Passwords match, login is successful
+//                     // res.send('Login successful! Welcome, ' + username + '!');
+//                     // Save user session here, when login is successful
+//                     req.session.userId = username;
+//                     req.session.isLoggedIn = true;
+//                     req.session.message = 'Welcome Back!';
+//                     return res.redirect('/')
+
+//                 } else {
+//                     // Passwords do not match
+//                     res.status(400).send('Login failed: Invalid username or password.');
+//                 }
+//             });
+//         }
+//     );
+// });
+
+router.post('/loggedin', [
+    check('username').notEmpty().withMessage('Username is required'),
+    check('password').notEmpty().withMessage('Password is required')
+], async function (req, res, next) {
     const errors = validationResult(req);
-    if (!errors.isEmpty()){
-        return res.status(400).json({errors:errors.array()});
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
+
     const { username, password } = req.body;
 
-    // Query the database to find the user by username
-    db.query(
-        'SELECT hashed_password FROM users WHERE username = ?',
-        [username],
-        (err, results) => {
-            if (err) {
-                next(err)
-            }
+    try {
+        // Query the database to find the user by username
+        const [results] = await db.query('SELECT id, username, hashed_password FROM users WHERE username = ?', [username]);
 
-            if (results.length === 0) {
-                // No user found with the given username
-                return res.status(400).send('Login failed: Invalid username or password.');
-            }
-
-            // Compare the entered password with the hashed password from the database
-            const hashed_password = results[0].hashed_password;
-
-
-            req.session.user = {
-                id: results[0].id,
-                username: results[0].username,
-            };
-
-            bcrypt.compare(password, hashed_password, function(err, result) {
-                if (err) {
-                    next(err)
-                }
-
-                if (result == true) {
-                    // Passwords match, login is successful
-                    // res.send('Login successful! Welcome, ' + username + '!');
-                    // Save user session here, when login is successful
-                    req.session.userId = username;
-                    req.session.isLoggedIn = true;
-                    req.session.message = 'Welcome Back!';
-                    return res.redirect('/')
-
-                } else {
-                    // Passwords do not match
-                    res.status(400).send('Login failed: Invalid username or password.');
-                }
-            });
+        if (results.length === 0) {
+            return res.status(400).send('Login failed: Invalid username or password.');
         }
-    );
+
+        const { id, hashed_password } = results[0];
+
+        // Compare the entered password with the hashed password
+        const isMatch = await bcrypt.compare(password, hashed_password);
+        if (!isMatch) {
+            return res.status(400).send('Login failed: Invalid username or password.');
+        }
+
+        // Save user session on successful login
+        req.session.userId = id;
+        req.session.username = username;
+        req.session.isLoggedIn = true;
+
+        res.redirect('/');
+    } catch (err) {
+        console.error("Error during login:", err.message);
+        next(err);
+    }
 });
+
 
 router.get('/logout', redirectLogin,(req, res) => {
     req.session.destroy((err) => {
@@ -171,9 +212,6 @@ router.get('/:id', (req, res) => {
     res.json(user);
 });
 
-router.get('/basket', (req, res) => {
-    res.render('basket'); 
-});
 
 // Export the router object so index.js can access it
 module.exports = router;

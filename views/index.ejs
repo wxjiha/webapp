@@ -11,23 +11,49 @@
         <li><a href="/list">Products</a></li>
         <li><a href="/users/login">Login</a></li>
         <li><a href="/users/register">Register</a></li>
-        <li><a href="/basket">Checkout</a></li>
+        <li><a href="/basket">Basket & Checkout</a></li>
         <li><a href="/users/logout">Logout</a></li>
       </ul>
     </nav>
+
+
+    <script>
+      async function addToBasket(productId) {
+          try {
+              const response = await fetch('/products/add-to-basket', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ productId, quantity: 1 }), // Default quantity is 1
+              });
+  
+              if (response.ok) {
+                  alert('Product added to basket successfully!');
+              } else {
+                  alert('Failed to add product to basket. Please try again.');
+              }
+          } catch (error) {
+              console.error('Error adding product to basket:', error);
+              alert('An error occurred. Please try again later.');
+          }
+      }
+  </script>
+  
+
   </head>
   <body>
     <h1>Welcome to <%=shopData.shopName%></h1>
 
-    <h2><% if (message) { %>
-      <p><%= message %></p>
-      <% } %>
-    </h2>
+    <% if (message) { %>
+      <h2><p><%= message %></p></h2>
+    <% } %>
 
 
-    <img src="img/curling.jpg" alt="Curling Mascara" class="pictures">
-    <img src="img/lengthening.jpg" alt="Lengthening Mascara" class="pictures">
-    <img src="img/volumising.jpg" alt="Volumising Mascara" class="pictures">
+    <img src="/img/curling.jpg" alt="Curling Mascara" class="pictures" onclick="addToBasket(1)">
+    <img src="/img/lengthening.jpg" alt="Lengthening Mascara" class="pictures" onclick="addToBasket(2)">
+    <img src="/img/volumising.jpg" alt="Volumising Mascara" class="pictures" onclick="addToBasket(3)">
+
 
     <!-- <header>
       <div id="category-container"></div>

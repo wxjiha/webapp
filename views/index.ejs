@@ -58,27 +58,33 @@
     <script>
       document.addEventListener('DOMContentLoaded', () => {
           const productContainer = document.getElementById('product-container');
-      
-          // Event listener for product images
+  
+          // Ensure productContainer exists
+          if (!productContainer) {
+              console.error('Product container not found.');
+              return;
+          }
+  
+          // Event listener for clicks on product images
           productContainer.addEventListener('click', async (event) => {
               const target = event.target;
-      
-              // Ensure the clicked element is a product image
+  
+              // Check if the clicked element is an image with the "pictures" class
               if (target.classList.contains('pictures')) {
                   const productId = target.getAttribute('data-product-id');
-      
+  
                   if (!productId) {
                       alert('Product ID not found.');
                       return;
                   }
-      
+  
                   try {
                       const response = await fetch('/add-to-basket', {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify({ productId, quantity: 1 }) // Default quantity is 1
                       });
-      
+  
                       const result = await response.json();
                       if (response.ok) {
                           alert(result.message); // Display success message
@@ -92,7 +98,8 @@
               }
           });
       });
-    </script>
+  </script>
+  
       
   </body>
 </html>

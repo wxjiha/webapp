@@ -182,45 +182,53 @@
     <% } %>
 
 
-    <!-- Include Stripe and Checkout Logic -->
     <script>
-        const stripe = Stripe('<%= publishableKey %>'); // Inject your publishable key dynamically from the server
-        const elements = stripe.elements();
+        document.addEventListener('DOMContentLoaded', () => {
+            const cardElement = document.querySelector('#card-element');
+            const paymentForm = document.querySelector('#payment-form');
 
-        // Create a card element and mount it
-        const card = elements.create('card');
-        card.mount('#card-element');
+            if (cardElement && paymentForm) {
+                const stripe = Stripe('<%= pk_test_51QURwHCr8lIdfj62jyCUPtor1lGcSvgk2tdZhJWIQTiGJXZtLlvmreRxDYzu1jG4ZMqK9YdWkxk1XNLgyT8kikK000nYQkqgps %>'); // Inject your publishable key dynamically from the server
+                const elements = stripe.elements();
 
-        document.querySelector('#payment-form').addEventListener('submit', async (event) => {
-            event.preventDefault();
+                // Create and mount the card element
+                const card = elements.create('card');
+                card.mount('#card-element');
 
-            try {
-                // Fetch clientSecret from your backend
-                const { clientSecret } = await fetch('/create-payment-intent', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        amount: <%= products.reduce((total, product) => total + product.price * product.quantity, 0) %> 
-                    }) // Adjust amount based on basket total
-                }).then(res => res.json());
+                paymentForm.addEventListener('submit', async (event) => {
+                    event.preventDefault();
 
-                // Confirm payment with Stripe
-                const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
-                    payment_method: {
-                        card: card,
-                        billing_details: { name: 'Customer Name' },
+                    try {
+                        // Fetch clientSecret from your backend
+                        const { clientSecret } = await fetch('/create-payment-intent', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                amount: <%= products.reduce((total, product) => total + product.price * product.quantity, 0) %>
+                            }) // Adjust amount based on basket total
+                        }).then(res => res.json());
+
+                        // Confirm payment with Stripe
+                        const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
+                            payment_method: {
+                                card: card,
+                                billing_details: { name: 'Customer Name' },
+                            }
+                        });
+
+                        if (error) {
+                            console.error(error.message);
+                            document.getElementById('payment-message').textContent = error.message;
+                        } else if (paymentIntent.status === 'succeeded') {
+                            window.location.href = `/confirmation?paymentIntentId=${paymentIntent.id}`;
+                        }
+                    } catch (error) {
+                        console.error('Error during payment:', error);
+                        document.getElementById('payment-message').textContent = 'An error occurred. Please try again.';
                     }
                 });
-
-                if (error) {
-                    console.error(error.message);
-                    document.getElementById('payment-message').textContent = error.message;
-                } else if (paymentIntent.status === 'succeeded') {
-                    window.location.href = `/confirmation?paymentIntentId=${paymentIntent.id}`;
-                }
-            } catch (error) {
-                console.error('Error during payment:', error);
-                document.getElementById('payment-message').textContent = 'An error occurred. Please try again.';
+            } else {
+                console.warn('Stripe payment elements are not initialized. No payment form found.');
             }
         });
     </script>

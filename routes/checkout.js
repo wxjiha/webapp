@@ -125,16 +125,20 @@ router.get('/confirmation', async (req, res) => {
 
 router.post('/create-payment-intent', async (req, res) => {
     try {
-        const { amount, currency } = req.body; // Amount in smallest currency unit (e.g., cents)
+        const { amount } = req.body;
+        if (!amount) return res.status(400).send({ error: 'Invalid amount' });
 
         const paymentIntent = await stripe.paymentIntents.create({
             amount,
             currency: 'gbp',
         });
+
         res.json({ clientSecret: paymentIntent.client_secret });
     } catch (error) {
+        console.error('Error creating payment intent:', error.message);
         res.status(500).send({ error: error.message });
     }
 });
+
 
 module.exports = router;

@@ -171,19 +171,18 @@
     <!-- Payment Form -->
     <% if (products && products.length > 0) { %>
         <form id="payment-form">
-            <h2>Checkout</h2>
-            <label for="card-element">Credit or Debit Card</label>
-            <div id="card-element"></div> <!-- Stripe embeds the card input here -->
+            <div id="card-element"></div>
             <button id="submit">Pay</button>
-            <p id="payment-message"></p>
         </form>
     <% } else { %>
         <p>Add items to proceed to checkout.</p>
     <% } %>
+    
 
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOMContentLoaded fired');
             // Check for payment form and card element
             const cardElement = document.querySelector('#card-element');
             const paymentForm = document.querySelector('#payment-form');

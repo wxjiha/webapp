@@ -188,7 +188,7 @@
             const paymentForm = document.querySelector('#payment-form');
 
             if (cardElement && paymentForm) {
-                const stripe = Stripe('<%= publishableKey %>'); // Inject your publishable key dynamically from the server
+                const stripe = Stripe('<%= publishableKey %>'); // Inject your publishable key dynamically
                 const elements = stripe.elements();
 
                 // Create and mount the card element
@@ -199,16 +199,14 @@
                     event.preventDefault();
 
                     try {
-                        // Fetch clientSecret from your backend
                         const { clientSecret } = await fetch('/create-payment-intent', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 amount: <%= products.reduce((total, product) => total + product.price * product.quantity, 0) %>
-                            }) // Adjust amount based on basket total
+                            })
                         }).then(res => res.json());
 
-                        // Confirm payment with Stripe
                         const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
                             payment_method: {
                                 card: card,
@@ -217,7 +215,6 @@
                         });
 
                         if (error) {
-                            console.error(error.message);
                             document.getElementById('payment-message').textContent = error.message;
                         } else if (paymentIntent.status === 'succeeded') {
                             window.location.href = `/confirmation?paymentIntentId=${paymentIntent.id}`;
@@ -231,6 +228,7 @@
                 console.warn('Stripe payment elements are not initialized. No payment form found.');
             }
         });
+
     </script>
 </body>
 </html>

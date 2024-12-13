@@ -19,27 +19,26 @@
 
     <script>
       async function addToBasket(productId) {
-          try {
-              const response = await fetch('/products/add-to-basket', {
-                  method: 'POST',
-                  headers: {
-                      'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({ productId, quantity: 1 }), // Default quantity is 1
-              });
+    try {
+        const response = await fetch('/products/add-to-basket', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId, quantity: 1 }),
+        });
 
-              const result = await response.json();
-  
-              if (response.ok) {
-                  alert('Product added to basket successfully!');
-              } else {
-                  alert('Failed to add product to basket. Please try again.');
-              }
-          } catch (error) {
-              console.error('Error adding product to basket:', error);
-              alert('An error occurred. Please try again later.');
-          }
-      }
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(result.message); // Display success message
+        } else {
+            alert(result.message); // Display error message from server
+        }
+    } catch (error) {
+        console.error('Error adding product to basket:', error);
+        alert('An error occurred. Please try again later.');
+    }
+}
+
   </script>
   
 

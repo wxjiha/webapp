@@ -184,36 +184,38 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Check for payment form and card element
             const cardElement = document.querySelector('#card-element');
             const paymentForm = document.querySelector('#payment-form');
-
+    
+            // Initialize Stripe only if the payment form exists
             if (cardElement && paymentForm) {
-                const stripe = Stripe('<%= publishableKey %>'); // Inject your publishable key dynamically
+                const stripe = Stripe('<%= publishableKey %>'); // Dynamically injected publishable key
                 const elements = stripe.elements();
-
+    
                 // Create and mount the card element
                 const card = elements.create('card');
                 card.mount('#card-element');
-
+    
                 paymentForm.addEventListener('submit', async (event) => {
                     event.preventDefault();
-
+    
                     try {
                         const { clientSecret } = await fetch('/create-payment-intent', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
-                                amount: <%= products.reduce((total, product) => total + product.price * product.quantity, 0) %>
-                            })
-                        }).then(res => res.json());
-
+                                amount: <%= products.reduce((total, product) => total + product.price * product.quantity, 0) %>,
+                            }),
+                        }).then((res) => res.json());
+    
                         const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
                             payment_method: {
                                 card: card,
                                 billing_details: { name: 'Customer Name' },
-                            }
+                            },
                         });
-
+    
                         if (error) {
                             document.getElementById('payment-message').textContent = error.message;
                         } else if (paymentIntent.status === 'succeeded') {
@@ -228,7 +230,7 @@
                 console.warn('Stripe payment elements are not initialized. No payment form found.');
             }
         });
-
     </script>
+    
 </body>
 </html>

@@ -118,11 +118,10 @@ router.post('/add-to-basket', async (req, res) => {
     }
 
     try {
-        // Fetch product details from the database
-        const product = await db.query('SELECT * FROM items WHERE id = ?', [productId]);
+        const [product] = await db.query('SELECT * FROM items WHERE id = ?', [productId]);
         console.log('Fetched product:', product);
 
-        if (!product) {
+        if (!product || product.length === 0) {
             console.error('Product not found for ID:', productId);
             return res.status(404).json({ message: 'Product not found' });
         }
@@ -133,16 +132,16 @@ router.post('/add-to-basket', async (req, res) => {
         }
 
         // Check if product already in basket and update quantity
-        const existingProductIndex = req.session.basket.findIndex(item => item.productId === productId);
+        const existingProductIndex = req.session.basket.findIndex((item) => item.productId === productId);
 
         if (existingProductIndex !== -1) {
             req.session.basket[existingProductIndex].quantity += quantity;
         } else {
             req.session.basket.push({
                 productId,
-                name: product.name,
-                price: product.price,
-                quantity
+                name: product[0].name,
+                price: product[0].price,
+                quantity,
             });
         }
 
@@ -153,6 +152,7 @@ router.post('/add-to-basket', async (req, res) => {
         res.status(500).json({ message: 'Failed to add product to basket. Please try again.' });
     }
 });
+
 
 
 

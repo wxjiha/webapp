@@ -7,18 +7,54 @@ const db = require('../db');
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
+// router.get('/basket', async (req, res) => {
+
+//     try {
+//         const basketItems = req.session.basket || []; // Retrieve basket from session
+//         const products = [];
+
+//         // Fetch each product from the database and add quantity
+//         for (let item of basketItems) {
+//             const [rows] = await db.query('SELECT * FROM items WHERE id = ?', [item.productId]);
+//             if (rows.length > 0) {
+//                 products.push({ ...rows[0], quantity: item.quantity });
+//             }
+//         }
+
+//         // Render basket view
+//         res.render('basket', { 
+//             products, 
+//             publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_51QURwHCr8lIdfj62jyCUPtor1lGcSvgk2tdZhJWIQTiGJXZtLlvmreRxDYzu1jG4ZMqK9YdWkxk1XNLgyT8kikK000nYQkqgps' 
+//         });
+//     } catch (error) {
+//         console.error('Error fetching basket items:', error);
+//         res.status(500).send('An error occurred.');
+//     }
+// });
+
 router.get('/basket', async (req, res) => {
     try {
         const basketItems = req.session.basket || []; // Retrieve basket from session
-        const products = [];
 
-        // Fetch each product from the database and add quantity
-        for (let item of basketItems) {
-            const [rows] = await db.query('SELECT * FROM items WHERE id = ?', [item.productId]);
-            if (rows.length > 0) {
-                products.push({ ...rows[0], quantity: item.quantity });
-            }
+        // If the basket is empty, render the view with an empty product list
+        if (basketItems.length === 0) {
+            return res.render('basket', { 
+                products: [], 
+                publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_51QURwHCr8lIdfj62jyCUPtor1lGcSvgk2tdZhJWIQTiGJXZtLlvmreRxDYzu1jG4ZMqK9YdWkxk1XNLgyT8kikK000nYQkqgps' 
+            });
         }
+
+        // Extract product IDs from basket items
+        const productIds = basketItems.map(item => item.productId);
+
+        // Fetch all products in a single query
+        const [rows] = await db.query('SELECT * FROM items WHERE id IN (?)', [productIds]);
+
+        // Combine product details with quantities from the basket
+        const products = rows.map(product => {
+            const basketItem = basketItems.find(item => item.productId === product.id);
+            return { ...product, quantity: basketItem.quantity };
+        });
 
         // Render basket view
         res.render('basket', { 
@@ -26,10 +62,11 @@ router.get('/basket', async (req, res) => {
             publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_51QURwHCr8lIdfj62jyCUPtor1lGcSvgk2tdZhJWIQTiGJXZtLlvmreRxDYzu1jG4ZMqK9YdWkxk1XNLgyT8kikK000nYQkqgps' 
         });
     } catch (error) {
-        console.error('Error fetching basket items:', error);
-        res.status(500).send('An error occurred.');
+        console.error('Error fetching basket items:', error.message);
+        res.status(500).send('An error occurred while fetching basket items.');
     }
 });
+
 
 // Handle checkout
 router.post('/checkout', async (req, res) => {

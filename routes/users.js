@@ -68,7 +68,6 @@ router.get('/logout', redirectLogin,(req, res) => {
         return res.redirect('/usr/448/');
       }
       res.render('logout', {message:"You've successfully logged out, you are being redirected to the home page"}); 
-      res.redirect('/usr/448/');
     });
 });
 

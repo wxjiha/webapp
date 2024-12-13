@@ -7,31 +7,6 @@ const db = require('../db');
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-// router.get('/basket', async (req, res) => {
-
-//     try {
-//         const basketItems = req.session.basket || []; // Retrieve basket from session
-//         const products = [];
-
-//         // Fetch each product from the database and add quantity
-//         for (let item of basketItems) {
-//             const [rows] = await db.query('SELECT * FROM items WHERE id = ?', [item.productId]);
-//             if (rows.length > 0) {
-//                 products.push({ ...rows[0], quantity: item.quantity });
-//             }
-//         }
-
-//         // Render basket view
-//         res.render('basket', { 
-//             products, 
-//             publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_51QURwHCr8lIdfj62jyCUPtor1lGcSvgk2tdZhJWIQTiGJXZtLlvmreRxDYzu1jG4ZMqK9YdWkxk1XNLgyT8kikK000nYQkqgps' 
-//         });
-//     } catch (error) {
-//         console.error('Error fetching basket items:', error);
-//         res.status(500).send('An error occurred.');
-//     }
-// });
-
 router.get('/basket', async (req, res) => {
     try {
         const basketItems = req.session.basket || []; // Retrieve basket from session

@@ -120,12 +120,12 @@ router.post('/add-to-basket', async (req, res) => {
     try {
         // Fetch product details from the database
         const product = await db.query('SELECT * FROM items WHERE id = ?', [productId]);
+        console.log('Fetched product:', product);
 
-        if (product.length === 0) {
+        if (!product) {
+            console.error('Product not found for ID:', productId);
             return res.status(404).json({ message: 'Product not found' });
         }
-
-        const productDetails = product[0];
 
         // Initialize basket in session if it doesn't exist
         if (!req.session.basket) {

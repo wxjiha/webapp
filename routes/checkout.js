@@ -34,31 +34,30 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 router.get('/basket', async (req, res) => {
     try {
-        const basketItems = req.session.basket || []; // Retrieve basket from session
+        const basket = req.session.basket || []; // Retrieve basket from session
 
-        // If the basket is empty, render the view with an empty product list
-        if (basketItems.length === 0) {
+        if (basket.length === 0) {
+            // Render basket view with an empty basket
             return res.render('basket', { 
-                products: [], 
+                basket: [], 
                 publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_51QURwHCr8lIdfj62jyCUPtor1lGcSvgk2tdZhJWIQTiGJXZtLlvmreRxDYzu1jG4ZMqK9YdWkxk1XNLgyT8kikK000nYQkqgps' 
             });
         }
 
-        // Extract product IDs from basket items
-        const productIds = basketItems.map(item => item.productId);
+        const productIds = basket.map(item => item.productId);
 
         // Fetch all products in a single query
         const [rows] = await db.query('SELECT * FROM items WHERE id IN (?)', [productIds]);
 
         // Combine product details with quantities from the basket
         const products = rows.map(product => {
-            const basketItem = basketItems.find(item => item.productId === product.id);
+            const basketItem = basket.find(item => item.productId === product.id);
             return { ...product, quantity: basketItem.quantity };
         });
 
         // Render basket view
         res.render('basket', { 
-            products, 
+            basket: products, // Pass combined products as basket
             publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_51QURwHCr8lIdfj62jyCUPtor1lGcSvgk2tdZhJWIQTiGJXZtLlvmreRxDYzu1jG4ZMqK9YdWkxk1XNLgyT8kikK000nYQkqgps' 
         });
     } catch (error) {
@@ -66,6 +65,7 @@ router.get('/basket', async (req, res) => {
         res.status(500).send('An error occurred while fetching basket items.');
     }
 });
+
 
 
 // Handle checkout

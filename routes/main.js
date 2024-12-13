@@ -10,7 +10,7 @@ const db = require('../db');
 router.get('/',function(req, res, next){
     
     try {
-        const shopData = { shopName: "Spendaholic" }; // Define shopData
+        const shopData = { shopName: "Shopaholic" }; // Define shopData
         const message = req.session.userId ? 'Welcome Back!' : null; // Check if the user is logged in
         res.render('index', { shopData, message }); // Pass both shopData and message
     } catch (error) {
@@ -38,7 +38,7 @@ router.get('/search_result', async (req, res, next) => {
     // Check if the search_text parameter is provided
     if (!req.query.search_text) {
         console.log("No search text provided");
-        return res.render("list.ejs", { availableitems: [], shopData: { shopName: "Spendaholic" } });
+        return res.render("list.ejs", { availableitems: [], shopData: { shopName: "Shopaholic" } });
     }
     
     const searchText = `%${req.query.search_text}%`; // Wrap the search term with wildcards
@@ -47,7 +47,7 @@ router.get('/search_result', async (req, res, next) => {
         console.log("Executing SQL Query:", sqlquery, searchText); // Debug log
         const [result] = await db.query(sqlquery, [searchText]); // Use parameterized query
         console.log("Query Result:", result); // Log the query result
-        const shopData = { shopName: "Spendaholic" }; // Define shop data
+        const shopData = { shopName: "Shopaholic" }; // Define shop data
         res.render("list.ejs", { availableitems: result, shopData }); // Pass results to list.ejs
     } catch (err) {
         console.error("Database Query Failed:", err.message); // Log error details
@@ -62,7 +62,7 @@ router.get('/list', async (req, res, next) => {
         console.log("Executing SQL Query:", sqlquery); // Debug log
         const [result] = await db.query(sqlquery); // Use async/await for clarity
         console.log("Query Result:", result); // Log the query result
-        const shopData = { shopName: "Spendaholic" }; // Define shop data
+        const shopData = { shopName: "Shopaholic" }; // Define shop data
         res.render("list.ejs", { availableitems: result, shopData }); // Pass shopData and availableitems
     } catch (err) {
         console.error("Database Query Failed:", err.message); // Log error details

@@ -188,7 +188,7 @@
             const paymentForm = document.querySelector('#payment-form');
 
             if (cardElement && paymentForm) {
-                const stripe = Stripe('<%= pk_test_51QURwHCr8lIdfj62jyCUPtor1lGcSvgk2tdZhJWIQTiGJXZtLlvmreRxDYzu1jG4ZMqK9YdWkxk1XNLgyT8kikK000nYQkqgps %>'); // Inject your publishable key dynamically from the server
+                const stripe = Stripe('<%= publishableKey %>'); // Inject your publishable key dynamically from the server
                 const elements = stripe.elements();
 
                 // Create and mount the card element

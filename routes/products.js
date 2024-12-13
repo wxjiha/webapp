@@ -137,8 +137,8 @@ router.post('/add-to-basket', async (req, res) => {
         } else {
             req.session.basket.push({
                 productId,
-                name: productDetails.name,
-                price: productDetails.price,
+                name: product.name,
+                price: product.price,
                 quantity
             });
         }

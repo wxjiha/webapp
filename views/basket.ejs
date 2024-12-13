@@ -138,7 +138,7 @@
     <h1>Your Basket</h1>
     
     <!-- Basket Items -->
-    <% if (basket && basket.length > 0) { %>
+    <!-- <% if (basket && basket.length > 0) { %>
         <table>
             <thead>
                 <tr>
@@ -156,6 +156,35 @@
                         <td><%= product.quantity %></td>
                         <td>$<%= ((product.price * product.quantity) / 100).toFixed(2) %></td>
                     </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        <p>Total Amount: $<%= (basket.reduce((total, product) => total + product.price * product.quantity, 0) / 100).toFixed(2) %></p>
+    <% } else { %>
+        <p>Your basket is empty.</p>
+    <% } %> -->
+
+    <h1>Your Basket</h1>
+
+    <!-- Basket Items -->
+    <% if (basket && basket.length > 0) { %>
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% basket.forEach(product => { %>
+                <tr>
+                    <td><%= product.name %></td>
+                    <td>$<%= (product.price / 100).toFixed(2) %></td>
+                    <td><%= product.quantity %></td>
+                    <td>$<%= ((product.price * product.quantity) / 100).toFixed(2) %></td>
+                </tr>
                 <% }); %>
             </tbody>
         </table>

@@ -65,7 +65,7 @@ router.get('/logout', redirectLogin,(req, res) => {
     req.session.destroy((err) => {
       if (err) {
         console.error(err);
-        return res.redirect('/usr/448/');
+        return res.redirect('/users/login');
       }
       res.render('logout', {message:"You've successfully logged out, you are being redirected to the home page"}); 
     });

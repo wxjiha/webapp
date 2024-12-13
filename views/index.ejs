@@ -50,10 +50,49 @@
     <% } %>
 
 
-    <img src="/img/curling.jpg" alt="Curling Mascara" class="pictures" onclick="addToBasket(1)">
-    <img src="/img/lengthening.jpg" alt="Lengthening Mascara" class="pictures" onclick="addToBasket(2)">
-    <img src="/img/volumising.jpg" alt="Volumising Mascara" class="pictures" onclick="addToBasket(3)">
+    <img src="/img/curling.jpg" alt="Curling Mascara" class="pictures" data-product-id="addToBasket(1)">
+    <img src="/img/lengthening.jpg" alt="Lengthening Mascara" class="pictures" data-product-id="addToBasket(2)">
+    <img src="/img/volumising.jpg" alt="Volumising Mascara" class="pictures" data-product-id="addToBasket(3)">
 
 
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const productContainer = document.getElementById('product-container');
+      
+          // Event listener for product images
+          productContainer.addEventListener('click', async (event) => {
+              const target = event.target;
+      
+              // Ensure the clicked element is a product image
+              if (target.classList.contains('pictures')) {
+                  const productId = target.getAttribute('data-product-id');
+      
+                  if (!productId) {
+                      alert('Product ID not found.');
+                      return;
+                  }
+      
+                  try {
+                      const response = await fetch('/add-to-basket', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ productId, quantity: 1 }) // Default quantity is 1
+                      });
+      
+                      const result = await response.json();
+                      if (response.ok) {
+                          alert(result.message); // Display success message
+                      } else {
+                          alert(result.message); // Display error message from server
+                      }
+                  } catch (error) {
+                      console.error('Error adding product to basket:', error);
+                      alert('Failed to add product to basket. Please try again.');
+                  }
+              }
+          });
+      });
+    </script>
+      
   </body>
 </html>

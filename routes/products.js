@@ -110,13 +110,16 @@ router.get('/products', async (req, res) => {
 router.post('/add-to-basket', async (req, res) => {
     const { productId, quantity } = req.body;
 
+    console.log('Request body:', req.body);
+
     if (!productId || quantity <= 0) {
+        console.error('Invalid product or quantity:', req.body);
         return res.status(400).json({ message: 'Invalid product or quantity' });
     }
 
     try {
         // Fetch product details from the database
-        const product = await db.query('SELECT * FROM products WHERE id = ?', [productId]);
+        const product = await db.query('SELECT * FROM items WHERE id = ?', [productId]);
 
         if (product.length === 0) {
             return res.status(404).json({ message: 'Product not found' });
@@ -143,6 +146,7 @@ router.post('/add-to-basket', async (req, res) => {
             });
         }
 
+        console.log('Updated session basket:', req.session.basket);
         res.status(200).json({ message: 'Product added to basket successfully!' });
     } catch (err) {
         console.error('Error adding product to basket:', err);

@@ -53,7 +53,7 @@ router.post('/loggedin', [
         req.session.username = username;
         req.session.isLoggedIn = true;
 
-        res.redirect('/index');
+        res.redirect('/');
     } catch (err) {
         console.error("Error during login:", err.message);
         next(err);
@@ -65,7 +65,7 @@ router.get('/logout', redirectLogin,(req, res) => {
     req.session.destroy((err) => {
       if (err) {
         console.error(err);
-        return res.redirect('/index');
+        return res.redirect('/');
       }
       res.render('logout', {message:"You've successfully logged out, you are being redirected to the home page"}); 
     });

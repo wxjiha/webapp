@@ -36,26 +36,29 @@ router.get('/basket', async (req, res) => {
     try {
         const basketItems = req.session.basket || []; // Retrieve basket from session
 
-        // If the basket is empty, render an empty basket
+        // If the basket is empty, render with an empty products array
         if (basketItems.length === 0) {
             return res.render('basket', { 
-                basket: [], // Pass an empty basket
+                products: [], // Pass empty products array
                 publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_51QURwHCr8lIdfj62jyCUPtor1lGcSvgk2tdZhJWIQTiGJXZtLlvmreRxDYzu1jG4ZMqK9YdWkxk1XNLgyT8kikK000nYQkqgps' 
             });
         }
 
-        // Fetch products and combine with quantities
+        // Extract product IDs from basket items
         const productIds = basketItems.map(item => item.productId);
+
+        // Fetch products from the database
         const [rows] = await db.query('SELECT * FROM items WHERE id IN (?)', [productIds]);
 
-        const basket = rows.map(product => {
+        // Combine product details with basket quantities
+        const products = rows.map(product => {
             const basketItem = basketItems.find(item => item.productId === product.id);
             return { ...product, quantity: basketItem.quantity };
         });
 
-        // Render basket view
+        // Render basket view with fetched products
         res.render('basket', { 
-            basket, // Pass the basket variable to the template
+            products, // Pass products array
             publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_51QURwHCr8lIdfj62jyCUPtor1lGcSvgk2tdZhJWIQTiGJXZtLlvmreRxDYzu1jG4ZMqK9YdWkxk1XNLgyT8kikK000nYQkqgps' 
         });
     } catch (error) {

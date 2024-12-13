@@ -117,8 +117,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Basket</title>
     <link rel="stylesheet" type="text/css" href="/main.css">
-
-    <script src="https://js.stripe.com/v3/"></script> <!-- Load Stripe.js -->
 </head>
 <body>
 
@@ -137,8 +135,8 @@
     
     <h1>Your Basket</h1>
     
-    <!-- Basket Items
-    <% if (basket && basket.length > 0) { %>
+    <!-- Basket Items -->
+    <% if (products && products.length > 0) { %>
         <table>
             <thead>
                 <tr>
@@ -149,7 +147,7 @@
                 </tr>
             </thead>
             <tbody>
-                <% basket.forEach(product => { %>
+                <% products.forEach(product => { %>
                     <tr>
                         <td><%= product.name %></td>
                         <td>$<%= (product.price / 100).toFixed(2) %></td>
@@ -159,91 +157,10 @@
                 <% }); %>
             </tbody>
         </table>
-        <p>Total Amount: $<%= (basket.reduce((total, product) => total + product.price * product.quantity, 0) / 100).toFixed(2) %></p>
+        <p>Total Amount: $<%= (products.reduce((total, product) => total + product.price * product.quantity, 0) / 100).toFixed(2) %></p>
     <% } else { %>
         <p>Your basket is empty.</p>
-    <% } %> -->
-
-    <!-- Basket Items -->
-<% if (products && products.length > 0) { %>
-    <table>
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% products.forEach(product => { %>
-                <tr>
-                    <td><%= product.name %></td>
-                    <td>$<%= (product.price / 100).toFixed(2) %></td>
-                    <td><%= product.quantity %></td>
-                    <td>$<%= ((product.price * product.quantity) / 100).toFixed(2) %></td>
-                </tr>
-            <% }); %>
-        </tbody>
-    </table>
-    <p>Total Amount: $<%= (products.reduce((total, product) => total + product.price * product.quantity, 0) / 100).toFixed(2) %></p>
-<% } else { %>
-    <p>Your basket is empty.</p>
-<% } %>
-
-
-    <!-- Payment Form -->
-    <% if (basket && basket.length > 0) { %>
-        <form id="payment-form">
-            <h2>Checkout</h2>
-            <label for="card-element">Credit or Debit Card</label>
-            <div id="card-element"></div> <!-- Stripe embeds the card input here -->
-            <button id="submit">Pay</button>
-            <p id="payment-message"></p>
-        </form>
     <% } %>
 
-    <!-- Include Stripe and Checkout Logic -->
-    <script>
-        const stripe = Stripe('<%= publishableKey %>'); // Inject your publishable key dynamically from the server
-        const elements = stripe.elements();
-
-        // Create a card element and mount it
-        const card = elements.create('card');
-        card.mount('#card-element');
-
-        document.querySelector('#payment-form').addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            try {
-                // Fetch clientSecret from your backend
-                const { clientSecret } = await fetch('/create-payment-intent', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        amount: <%= basket.reduce((total, product) => total + product.price * product.quantity, 0) %> 
-                    }) // Adjust amount based on basket total
-                }).then(res => res.json());
-
-                // Confirm payment with Stripe
-                const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
-                    payment_method: {
-                        card: card,
-                        billing_details: { name: 'Customer Name' },
-                    }
-                });
-
-                if (error) {
-                    console.error(error.message);
-                    document.getElementById('payment-message').textContent = error.message;
-                } else if (paymentIntent.status === 'succeeded') {
-                    window.location.href = `/confirmation?paymentIntentId=${paymentIntent.id}`;
-                }
-            } catch (error) {
-                console.error('Error during payment:', error);
-                document.getElementById('payment-message').textContent = 'An error occurred. Please try again.';
-            }
-        });
-    </script>
 </body>
 </html>

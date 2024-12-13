@@ -34,34 +34,24 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 router.get('/basket', async (req, res) => {
     try {
-        const basket = req.session.basket || []; // Retrieve basket from session
+        const basketItems = req.session.basket || []; // Retrieve basket from session
+        const products = [];
 
-        if (basket.length === 0) {
-            // Render basket view with an empty basket
-            return res.render('basket', { 
-                basket: [], 
-                publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_51QURwHCr8lIdfj62jyCUPtor1lGcSvgk2tdZhJWIQTiGJXZtLlvmreRxDYzu1jG4ZMqK9YdWkxk1XNLgyT8kikK000nYQkqgps' 
-            });
+        // Fetch each product from the database and add quantity
+        for (let item of basketItems) {
+            const [rows] = await db.query('SELECT * FROM items WHERE id = ?', [item.productId]);
+            if (rows.length > 0) {
+                products.push({ ...rows[0], quantity: item.quantity });
+            }
         }
 
-        const productIds = basket.map(item => item.productId);
-
-        // Fetch all products in a single query
-        const [rows] = await db.query('SELECT * FROM items WHERE id IN (?)', [productIds]);
-
-        // Combine product details with quantities from the basket
-        const products = rows.map(product => {
-            const basketItem = basket.find(item => item.productId === product.id);
-            return { ...product, quantity: basketItem.quantity };
-        });
-
-        // Render basket view
+        // Always pass products, even if empty
         res.render('basket', { 
-            basket: products, // Pass combined products as basket
+            products, // Pass products to template
             publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_51QURwHCr8lIdfj62jyCUPtor1lGcSvgk2tdZhJWIQTiGJXZtLlvmreRxDYzu1jG4ZMqK9YdWkxk1XNLgyT8kikK000nYQkqgps' 
         });
     } catch (error) {
-        console.error('Error fetching basket items:', error.message);
+        console.error('Error fetching basket items:', error);
         res.status(500).send('An error occurred while fetching basket items.');
     }
 });

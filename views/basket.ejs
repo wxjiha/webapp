@@ -200,7 +200,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        amount: <%= basket.reduce((total, product) => total + product.price * product.quantity, 0) %> 
+                        amount: <%= products.reduce((total, product) => total + product.price * product.quantity, 0) %> 
                     }) // Adjust amount based on basket total
                 }).then(res => res.json());
 

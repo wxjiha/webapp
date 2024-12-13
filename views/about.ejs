@@ -21,10 +21,34 @@
     <section class="about-section">
       <div class="about-text">
         <p>Welcome to Shopaholic! Where we sell the most luxury products for all of your needs. This is our first drop and we're so excited you're here to experince the wonerful products we've made in our labs. Indulge in our amazing products and love what we've crafted!</p>
+        <br>
+        <p>We pride ourselves in delivering all over the world, but sometimes the weather gets in the way. Feel free to check the weather in your city and ours (London), to see if there's any bad weather that might affect your delivery!</p>
       </div>
-      <div class="about-image">
+      <div class="container2">
+        <div class="weather-info">
+          <h1>Weather in Your City</h1>
+          <% if (error) { %>
+              <p class="error"><%= error %></p>
+          <% } else if (weather && weather.main) { %>
+              <p><strong>Temperature:</strong> <%= weather.main.temp %>°C</p>
+              <p><strong>Feels Like:</strong> <%= weather.main.feels_like %>°C</p>
+              <p><strong>Weather:</strong> <%= weather.weather[0].description %></p>
+              <p><strong>Humidity:</strong> <%= weather.main.humidity %>%</p>
+              <p><strong>Wind Speed:</strong> <%= weather.wind.speed %> m/s</p>
+          <% } else { %>
+              <p>Type in the name of your city below!</p>
+          <% } %>
+          
+            <form class="search-form" action="/weather" method="get">
+                <label for="city">Search for another city:</label>
+                <input type="text" name="city" id="city" placeholder="Enter city name" />
+                <button type="submit">Get Weather</button>
+            </form>
+        </div>
+    </div>
+      <!-- <div class="about-image">
         <img src="/img/anatomy.jpg" alt="About Us Image">
-      </div>
+      </div> -->
     </section>
   </body>
 </html>

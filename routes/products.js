@@ -83,75 +83,75 @@ router.get('/products', async (req, res) => {
 });
 
 // // Add product to basket
-// router.post('/add-to-basket', (req, res) => {
-//     const { productId, quantity } = req.body;
-
-//     // Initialize basket in session if it doesn't exist
-//     if (!req.session.basket) {
-//         req.session.basket = [];
-//     }    
-
-//     // Check if product already in basket, and update quantity
-//     const existingProductIndex = req.session.basket.findIndex(item => item.productId === productId);
-
-//     if (existingProductIndex !== -1) {
-//         // If the product is already in the basket, update the quantity
-//         req.session.basket[existingProductIndex].quantity += quantity;
-//     } else {
-//         // Add the new product to the basket
-//         req.session.basket.push({ productId, quantity });
-//     }
-
-//     res.status(200).json({ message: 'Product added to basket successfully!' });
-
-// });
-
-// Add product to basket
-router.post('/add-to-basket', async (req, res) => {
+router.post('/add-to-basket', (req, res) => {
     const { productId, quantity } = req.body;
 
-    console.log('Request body:', req.body);
+    // Initialize basket in session if it doesn't exist
+    if (!req.session.basket) {
+        req.session.basket = [];
+    }    
 
-    if (!productId || quantity <= 0) {
-        console.error('Invalid product or quantity:', req.body);
-        return res.status(400).json({ message: 'Invalid product or quantity' });
+    // Check if product already in basket, and update quantity
+    const existingProductIndex = req.session.basket.findIndex(item => item.productId === productId);
+
+    if (existingProductIndex !== -1) {
+        // If the product is already in the basket, update the quantity
+        req.session.basket[existingProductIndex].quantity += quantity;
+    } else {
+        // Add the new product to the basket
+        req.session.basket.push({ productId, quantity });
     }
 
-    try {
-        const [product] = await db.query('SELECT * FROM items WHERE id = ?', [productId]);
-        console.log('Fetched product:', product);
+    res.status(200).json({ message: 'Product added to basket successfully!' });
 
-        if (!product || product.length === 0) {
-            console.error('Product not found for ID:', productId);
-            return res.status(404).json({ message: 'Product not found' });
-        }
-
-        // Initialize basket in session if it doesn't exist
-        if (!req.session.basket) {
-            req.session.basket = [];
-        }
-
-        // Check if product already in basket and update quantity
-        const existingProductIndex = req.session.basket.findIndex((item) => item.productId === productId);
-
-        if (existingProductIndex !== -1) {
-            req.session.basket[existingProductIndex].quantity += quantity;
-        } else {
-            req.session.basket.push({
-                productId,
-                name: product[0].name,
-                price: product[0].price,
-                quantity,
-            });
-        }
-
-        console.log('Updated session basket:', req.session.basket);
-        res.status(200).json({ message: 'Product added to basket successfully!' });
-    } catch (err) {
-        console.error('Error adding product to basket:', err);
-        res.status(500).json({ message: 'Failed to add product to basket. Please try again.' });
-    }
 });
+
+// Add product to basket
+// router.post('/add-to-basket', async (req, res) => {
+//     const { productId, quantity } = req.body;
+
+//     console.log('Request body:', req.body);
+
+//     if (!productId || quantity <= 0) {
+//         console.error('Invalid product or quantity:', req.body);
+//         return res.status(400).json({ message: 'Invalid product or quantity' });
+//     }
+
+//     try {
+//         const [product] = await db.query('SELECT * FROM items WHERE id = ?', [productId]);
+//         console.log('Fetched product:', product);
+
+//         if (!product || product.length === 0) {
+//             console.error('Product not found for ID:', productId);
+//             return res.status(404).json({ message: 'Product not found' });
+//         }
+
+//         // Initialize basket in session if it doesn't exist
+//         if (!req.session.basket) {
+//             req.session.basket = [];
+//         }
+
+//         // Check if product already in basket and update quantity
+//         const existingProductIndex = req.session.basket.findIndex((item) => item.productId === productId);
+
+//         if (existingProductIndex !== -1) {
+//             req.session.basket[existingProductIndex].quantity += quantity;
+//         } else {
+//             req.session.basket.push({
+//                 productId,
+//                 name: product[0].name,
+//                 price: product[0].price,
+//                 quantity,
+//             });
+//         }
+
+//         console.log('Updated session basket:', req.session.basket);
+//         res.status(200).json({ message: 'Product added to basket successfully!' });
+//     } catch (err) {
+//         console.error('Error adding product to basket:', err);
+//         res.status(500).json({ message: 'Failed to add product to basket. Please try again.' });
+//     }
+// });
 
 
 

@@ -27,7 +27,15 @@ app.use(express.json());
 // Set up public folder (for CSS and static JS)
 app.use(express.static(__dirname + '/public'));
 
-app.use(cors());
+// app.use(cors());
+const corsOptions = {
+    origin: ['http://localhost:8000', 'https://doc.gold.ac.uk/usr/448/'],
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true, // Allow cookies
+};
+app.use(cors(corsOptions));
+
 
 // Create a session
 app.use(session({

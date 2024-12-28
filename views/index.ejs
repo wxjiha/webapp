@@ -20,7 +20,8 @@
     <script>
       async function addToBasket(productId) {
       try {
-          const response = await fetch('/products/add-to-basket', {
+          const baseURL = window.location.origin;
+          const response = await fetch(`${baseURL}'/products/add-to-basket', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ productId, quantity: 1 }),

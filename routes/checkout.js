@@ -15,7 +15,7 @@ router.get('/basket', async (req, res) => {
         if (basketItems.length === 0) {
             return res.render('basket', { 
                 products: [], // Pass empty products array
-                publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_51QURwHCr8lIdfj62jyCUPtor1lGcSvgk2tdZhJWIQTiGJXZtLlvmreRxDYzu1jG4ZMqK9YdWkxk1XNLgyT8kikK000nYQkqgps' 
+                publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || 'pk_live_51QURwHCr8lIdfj62jyCUPtor1lGcSvgk2tdZhJWIQTiGJXZtLlvmreRxDYzu1jG4ZMqK9YdWkxk1XNLgyT8kikK000nYQkqgps' 
             });
         }
 
